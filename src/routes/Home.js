@@ -2,6 +2,7 @@ import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import styled from 'styled-components';
+import Movie from '../components/Movie';
 
 const Container = styled.div`
   display: flex;
@@ -39,6 +40,16 @@ const Loading = styled.div`
 `;
 
 
+const Movies = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 25px;
+  width: 60%;
+  position: relative;
+  top: -50px;
+`;
+
+
 const GET_MOVIES = gql`
     {
         movies {
@@ -49,9 +60,10 @@ const GET_MOVIES = gql`
     }
 `;
 
+
 export default () => {
     const loaded = useQuery(GET_MOVIES);
-    const {loading} = loaded;
+    const {loading, data} = loaded;
     console.log(loaded, loading);
     return (
         <Container>
@@ -59,6 +71,15 @@ export default () => {
                 <Title>Apollo 2020</Title>
             </Header>
             {loading && <Loading>Loading...</Loading>}
+            {!loading && data.movies &&
+                <Movies>
+                    {
+                        data.movies.map(m => (
+                            <Movie key={m.id} id={m.id} bg={m.medium_cover_image} />
+                        ))
+                    }
+                </Movies>
+            }
         </Container>
     )
 };
