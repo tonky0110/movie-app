@@ -1,13 +1,22 @@
-import ApolloClient from 'apollo-boost';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import ApolloClient from "apollo-boost";
 
-const cache = new InMemoryCache();
-const link = new HttpLink({
-    uri: "http://localhost:4000/"
-})
 const client = new ApolloClient({
-    uri: "http://localhost:4000/"
+  uri: "http://localhost:4000",
+  resolvers: {
+    Movie: {
+      isLiked: () => false
+    },
+    Mutation: {
+      toggleLikeMovie: (_, { id, isLiked }, { cache }) => {
+        cache.writeData({
+          id: `Movie:${id}`,
+          data: {
+            isLiked: !isLiked
+          }
+        });
+      }
+    }
+  }
 });
 
 export default client;
